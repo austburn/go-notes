@@ -3,6 +3,8 @@ package main
 import "fmt"
 import "os"
 import "flag"
+import "net/http"
+import "encoding/json"
 
 type Location struct {
 	Lat, Long float32
@@ -28,5 +30,12 @@ func main()  {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Here is my api key %s\n", googleApiKey)
+	apiRequest := fmt.Sprintf("https://www.googleapis.com/geolocation/v1/geolocate?key=%s", googleApiKey)
+	resp, err := http.Post(apiRequest, "text/plain", nil)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	var jsonResponse map
+	json.NewDecoder(resp.Body).Decode(jsonResponse)
 }
